@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Anime Soundboard</title>
+<title>Anime Sounds</title>
 <style>
     * { margin:0; padding:0; box-sizing:border-box; font-family: -apple-system, sans-serif; }
   body { background: #0f0f1a; color: white; min-height: 100vh; padding: 20px; }
@@ -22,6 +22,12 @@
   .jujutsu { background: linear-gradient(135deg, #7209b7, #3a0ca3); }
   .playing { border-color: white !important; box-shadow: 0 0 20px white; }
   #nowPlaying { text-align:center; margin-top: 25px; font-size: 14px; color: #ffde59; min-height: 20px; }
+  .btn { display:block; margin:12px auto; padding:13px 22px; border-radius:50px; border:none; font-weight:bold; font-size:15px; cursor:pointer; width: 280px; }
+  #loopBtn { background:white; color:black; }
+  #loopBtn.on { background:#ffde59; color:black; }
+  #boostBtn { background:#ff3d71; color:white; }
+  #boostBtn.on { background:#00e676; color:black; }
+  .info { text-align:center; color:#888; font-size:12px; margin-top:10px; }
 </style>
 </head>
 <body>
@@ -31,47 +37,92 @@
 
 <div class="grid">
   <div class="card naruto" onclick="playSound(this, 'Naruto 🍥')">
-    <span class="emoji">🍥</span>
-    <h2>NARUTO</h2>
-    <p>Dattebayo !</p>
+    <span class="emoji">🍥</span><h2>NARUTO</h2><p>Dattebayo !</p>
   </div>
-
   <div class="card onepiece" onclick="playSound(this, 'One Piece 🏴‍☠️')">
-    <span class="emoji">🏴‍☠️</span>
-    <h2>ONE PIECE</h2>
-    <p>Gear 5 !</p>
+    <span class="emoji">🏴‍☠️</span><h2>ONE PIECE</h2><p>Gear 5 !</p>
   </div>
-
   <div class="card demon" onclick="playSound(this, 'Demon Slayer ⚔️')">
-    <span class="emoji">⚔️</span>
-    <h2>DEMON SLAYER</h2>
-    <p>Hinokami !</p>
+    <span class="emoji">⚔️</span><h2>DEMON SLAYER</h2><p>Hinokami !</p>
   </div>
-
   <div class="card jujutsu" onclick="playSound(this, 'Jujutsu Kaisen 👊')">
-    <span class="emoji">👊</span>
-    <h2>JUJUTSU KAISEN</h2>
-    <p>Gojo !</p>
+    <span class="emoji">👊</span><h2>JUJUTSU KAISEN</h2><p>Gojo !</p>
   </div>
 </div>
 
 <div id="nowPlaying">👆 Clique sur une carte</div>
 
-<audio id="player" src="A12%202.m4a"></audio>
+<button id="loopBtn" class="btn" onclick="toggleLoop()">🔁 Boucle : OFF</button>
+<button id="boostBtn" class="btn on" onclick="toggleBoost()">🔊 Booster Volume : ON</button>
+<p class="info">Le booster met le son au max et rend les sons faibles plus forts.<br>Pour le maximum, mets aussi le volume de ton téléphone au max.</p>
+
+<audio id="player" src="A12%202.m4a" preload="auto"></audio>
 
 <script>
   const player = document.getElementById('player');
   const nowPlaying = document.getElementById('nowPlaying');
+  const loopBtn = document.getElementById('loopBtn');
+  const boostBtn = document.getElementById('boostBtn');
+
+  // --- VOLUME MAX + BOOSTER ---
+  let audioCtx = null;
+  let gainNode = null;
+  let compressor = null;
+  let boostOn = true;
+
+  function initAudioBoost() {
+    if (audioCtx) return;
+    try {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const source = audioCtx.createMediaElementSource(player);
+      gainNode = audioCtx.createGain();
+      compressor = audioCtx.createDynamicsCompressor();
+      // Réglages pour remonter les sons faibles
+      compressor.threshold.value = -24;
+      compressor.ratio.value = 12;
+      compressor.attack.value = 0.003;
+      compressor.release.value = 0.25;
+      gainNode.gain.value = 2.5; // Booster x2.5
+      source.connect(gainNode);
+      gainNode.connect(compressor);
+      compressor.connect(audioCtx.destination);
+    } catch(e) { console.log("Boost non supporté, volume normal"); }
+  }
+
+  function toggleBoost() {
+    boostOn = !boostOn;
+    if (gainNode) gainNode.gain.value = boostOn ? 2.5 : 1.0;
+    boostBtn.textContent = boostOn ? '🔊 Booster Volume : ON' : '🔊 Booster Volume : OFF';
+    boostBtn.classList.toggle('on', boostOn);
+    player.volume = 1.0;
+  }
+
+  // --- BOUCLE ---
+  let loopOn = false;
+  function toggleLoop() {
+    loopOn = !loopOn;
+    player.loop = loopOn;
+    loopBtn.textContent = loopOn ? '🔁 Boucle : ON - Clique pour arrêter' : '🔁 Boucle : OFF';
+    loopBtn.classList.toggle('on', loopOn);
+  }
+
+  // --- LECTURE ---
   function playSound(card, name) {
+    initAudioBoost();
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
     document.querySelectorAll('.card').forEach(c => c.classList.remove('playing'));
     card.classList.add('playing');
     nowPlaying.textContent = '▶️ En train de jouer : ' + name;
+    player.volume = 1.0; // Toujours au max dans le site
     player.currentTime = 0;
     player.play();
   }
+
   player.onended = () => {
-    document.querySelectorAll('.card').forEach(c => c.classList.remove('playing'));
-    nowPlaying.textContent = '👆 Clique sur une carte';
+    if (!player.loop) {
+      document.querySelectorAll('.card').forEach(c => c.classList.remove('playing'));
+      nowPlaying.textContent = '👆 Clique sur une carte';
+    }
   };
 </script>
 
