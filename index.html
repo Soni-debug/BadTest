@@ -1,3 +1,79 @@
-<h1>Clique pour entendre le son</h1>
-<button onclick="document.getElementById('son').play()">PLAY</button>
-<audio id="son" src="A12 2.m4a" type="audio/mp4">
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anime Soundboard</title>
+<style>
+    * { margin:0; padding:0; box-sizing:border-box; font-family: -apple-system, sans-serif; }
+  body { background: #0f0f1a; color: white; min-height: 100vh; padding: 20px; }
+  h1 { text-align:center; font-size: 28px; margin: 15px 0 5px; }
+  h1 span { color: #ff3d71; }
+  p.subtitle { text-align:center; color: #aaa; margin-bottom: 25px; font-size: 15px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; max-width: 500px; margin: 0 auto; }
+  .card { border-radius: 20px; padding: 22px 10px; text-align:center; cursor:pointer; border: 2px solid transparent; transition: 0.2s; }
+  .card:active { transform: scale(0.95); }
+  .card .emoji { font-size: 48px; display:block; margin-bottom: 10px; }
+  .card h2 { font-size: 17px; margin-bottom: 5px; }
+  .card p { font-size: 12px; opacity: 0.8; }
+  .naruto { background: linear-gradient(135deg, #ff6b00, #ff9a00); }
+  .onepiece { background: linear-gradient(135deg, #e63946, #ff4d6d); }
+  .demon { background: linear-gradient(135deg, #00b4d8, #0077b6); }
+  .jujutsu { background: linear-gradient(135deg, #7209b7, #3a0ca3); }
+  .playing { border-color: white !important; box-shadow: 0 0 20px white; }
+  #nowPlaying { text-align:center; margin-top: 25px; font-size: 14px; color: #ffde59; min-height: 20px; }
+</style>
+</head>
+<body>
+
+<h1>ANIME <span>SOUNDS</span> 🎧</h1>
+<p class="subtitle">Choisis ton anime, écoute le son</p>
+
+<div class="grid">
+  <div class="card naruto" onclick="playSound(this, 'Naruto 🍥')">
+    <span class="emoji">🍥</span>
+    <h2>NARUTO</h2>
+    <p>Dattebayo !</p>
+  </div>
+
+  <div class="card onepiece" onclick="playSound(this, 'One Piece 🏴‍☠️')">
+    <span class="emoji">🏴‍☠️</span>
+    <h2>ONE PIECE</h2>
+    <p>Gear 5 !</p>
+  </div>
+
+  <div class="card demon" onclick="playSound(this, 'Demon Slayer ⚔️')">
+    <span class="emoji">⚔️</span>
+    <h2>DEMON SLAYER</h2>
+    <p>Hinokami !</p>
+  </div>
+
+  <div class="card jujutsu" onclick="playSound(this, 'Jujutsu Kaisen 👊')">
+    <span class="emoji">👊</span>
+    <h2>JUJUTSU KAISEN</h2>
+    <p>Gojo !</p>
+  </div>
+</div>
+
+<div id="nowPlaying">👆 Clique sur une carte</div>
+
+<audio id="player" src="A12%202.m4a"></audio>
+
+<script>
+  const player = document.getElementById('player');
+  const nowPlaying = document.getElementById('nowPlaying');
+  function playSound(card, name) {
+    document.querySelectorAll('.card').forEach(c => c.classList.remove('playing'));
+    card.classList.add('playing');
+    nowPlaying.textContent = '▶️ En train de jouer : ' + name;
+    player.currentTime = 0;
+    player.play();
+  }
+  player.onended = () => {
+    document.querySelectorAll('.card').forEach(c => c.classList.remove('playing'));
+    nowPlaying.textContent = '👆 Clique sur une carte';
+  };
+</script>
+
+</body>
+</html>
