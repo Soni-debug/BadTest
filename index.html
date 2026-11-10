@@ -3,18 +3,27 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Anime Sounds</title>
+<title>Anime Sounds 🎧 - By SoniiiTheGhost 👻</title>
+
+<!-- ===== APERÇU WHATSAPP / LE GRAND DUEL ===== -->
+<meta property="og:title" content="Anime Sounds 🎧 - By SoniiiTheGhost 👻">
+<meta property="og:description" content="Choisis ton anime, écoute le son ! Naruto, One Piece, Demon Slayer, Jujutsu Kaisen">
+<meta property="og:image" content="https://soni-debug.github.io/BadTest/fond.jpj.jpeg">
+<meta property="og:url" content="https://soni-debug.github.io/BadTest/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Anime Sounds 🎧 - By SoniiiTheGhost 👻">
+<meta name="twitter:description" content="Choisis ton anime, écoute le son !">
+<meta name="twitter:image" content="https://soni-debug.github.io/BadTest/fond.jpj.jpeg">
+<!-- ============================================ -->
+
 <style>
     * { margin:0; padding:0; box-sizing:border-box; font-family: -apple-system, sans-serif; }
   body { background: #0f0f1a; color: white; min-height: 100vh; padding: 20px; position: relative; }
   #bgImage { position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; display: none; }
-
   h1 { text-align:center; font-size: 28px; margin: 15px 0 2px; text-shadow: 0 2px 10px black; position: relative; z-index: 2; }
   h1 span { color: #ff3d71; }
-
-  /* --- TA SIGNATURE --- */
   .by { text-align:center; font-size: 13px; color: #fff; opacity: 0.95; margin: 0 0 8px; text-shadow: 0 1px 6px black; position: relative; z-index: 2; font-weight: bold; letter-spacing: 0.5px; }
-
   p.subtitle { text-align:center; color: #ddd; margin-bottom: 25px; font-size: 15px; text-shadow: 0 1px 5px black; position: relative; z-index: 2; }
   .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; max-width: 500px; margin: 0 auto; position: relative; z-index: 2; }
   .card { border-radius: 20px; padding: 22px 10px; text-align:center; cursor:pointer; border: 2px solid rgba(255,255,255,0.3); transition: 0.2s; }
@@ -76,7 +85,6 @@
   const loopBtn = document.getElementById('loopBtn');
   const boostBtn = document.getElementById('boostBtn');
   const bgImage = document.getElementById('bgImage');
-
   let audioCtx = null, gainNode = null, compressor = null, boostOn = true;
   function initAudioBoost() {
     if (audioCtx) return;
@@ -103,10 +111,8 @@
     loopBtn.textContent = loopOn ? '🔁 Boucle : ON - Clique pour arrêter' : '🔁 Boucle : OFF';
     loopBtn.classList.toggle('on', loopOn);
   }
-
   bgImage.onload = () => { bgImage.style.display = 'block'; };
   bgImage.onerror = () => { bgImage.style.display = 'none'; };
-
   function playSound(card, name, char) {
     initAudioBoost();
     if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
