@@ -6,61 +6,70 @@
 <title>Anime Sounds</title>
 <style>
     * { margin:0; padding:0; box-sizing:border-box; font-family: -apple-system, sans-serif; }
-  body { background: #0f0f1a; color: white; min-height: 100vh; padding: 20px; }
-  h1 { text-align:center; font-size: 28px; margin: 15px 0 5px; }
+  body { 
+    background: #0f0f1a; 
+    background-size: cover; background-position: center; background-repeat: no-repeat; background-attachment: fixed;
+    color: white; min-height: 100vh; padding: 20px; transition: background-image 0.5s; 
+  }
+  body::before { content:''; position:fixed; inset:0; background: rgba(0,0,0,0.65); z-index:-1; }
+  body.no-bg::before { background: transparent; }
+  h1 { text-align:center; font-size: 28px; margin: 15px 0 5px; text-shadow: 0 2px 10px black; }
   h1 span { color: #ff3d71; }
-  p.subtitle { text-align:center; color: #aaa; margin-bottom: 25px; font-size: 15px; }
+  p.subtitle { text-align:center; color: #ddd; margin-bottom: 25px; font-size: 15px; text-shadow: 0 1px 5px black; }
   .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; max-width: 500px; margin: 0 auto; }
-  .card { border-radius: 20px; padding: 22px 10px; text-align:center; cursor:pointer; border: 2px solid transparent; transition: 0.2s; }
+  .card { border-radius: 20px; padding: 22px 10px; text-align:center; cursor:pointer; border: 2px solid rgba(255,255,255,0.3); transition: 0.2s; }
   .card:active { transform: scale(0.95); }
   .card .emoji { font-size: 48px; display:block; margin-bottom: 10px; }
   .card h2 { font-size: 17px; margin-bottom: 5px; }
-  .card p { font-size: 12px; opacity: 0.8; }
-  .naruto { background: linear-gradient(135deg, #ff6b00, #ff9a00); }
-  .onepiece { background: linear-gradient(135deg, #e63946, #ff4d6d); }
-  .demon { background: linear-gradient(135deg, #00b4d8, #0077b6); }
-  .jujutsu { background: linear-gradient(135deg, #7209b7, #3a0ca3); }
-  .playing { border-color: white !important; box-shadow: 0 0 20px white; }
-  #nowPlaying { text-align:center; margin-top: 25px; font-size: 14px; color: #ffde59; min-height: 20px; }
+  .card p { font-size: 12px; opacity: 0.9; }
+  .naruto { background: linear-gradient(135deg, rgba(255,107,0,0.9), rgba(255,154,0,0.9)); }
+  .onepiece { background: linear-gradient(135deg, rgba(230,57,70,0.9), rgba(255,77,109,0.9)); }
+  .demon { background: linear-gradient(135deg, rgba(0,180,216,0.9), rgba(0,119,182,0.9)); }
+  .jujutsu { background: linear-gradient(135deg, rgba(114,9,183,0.9), rgba(58,12,163,0.9)); }
+  .playing { border-color: white !important; box-shadow: 0 0 25px white; transform: scale(1.03); }
+  #nowPlaying { text-align:center; margin-top: 25px; font-size: 15px; font-weight:bold; color: #ffde59; min-height: 20px; text-shadow: 0 1px 5px black; }
+  #charName { text-align:center; font-size: 32px; font-weight:900; margin-top:10px; text-shadow: 0 3px 15px black; letter-spacing: 1px; min-height: 40px; }
   .btn { display:block; margin:12px auto; padding:13px 22px; border-radius:50px; border:none; font-weight:bold; font-size:15px; cursor:pointer; width: 280px; }
   #loopBtn { background:white; color:black; }
   #loopBtn.on { background:#ffde59; color:black; }
   #boostBtn { background:#ff3d71; color:white; }
   #boostBtn.on { background:#00e676; color:black; }
-  .info { text-align:center; color:#888; font-size:12px; margin-top:10px; }
+  .info { text-align:center; color:#ccc; font-size:12px; margin-top:10px; text-shadow: 0 1px 3px black; }
 </style>
 </head>
-<body>
+<body class="no-bg">
 
 <h1>ANIME <span>SOUNDS</span> 🎧</h1>
 <p class="subtitle">Choisis ton anime, écoute le son</p>
 
 <div class="grid">
-  <div class="card naruto" onclick="playSound(this, 'Naruto 🍥')">
+  <div class="card naruto" onclick="playSound(this, 'Naruto 🍥', 'NARUTO UZUMAKI')">
     <span class="emoji">🍥</span><h2>NARUTO</h2><p>Dattebayo !</p>
   </div>
-  <div class="card onepiece" onclick="playSound(this, 'One Piece 🏴‍☠️')">
+  <div class="card onepiece" onclick="playSound(this, 'One Piece 🏴‍☠️', 'MONKEY D. LUFFY')">
     <span class="emoji">🏴‍☠️</span><h2>ONE PIECE</h2><p>Gear 5 !</p>
   </div>
-  <div class="card demon" onclick="playSound(this, 'Demon Slayer ⚔️')">
+  <div class="card demon" onclick="playSound(this, 'Demon Slayer ⚔️', 'TANJIRO KAMADO')">
     <span class="emoji">⚔️</span><h2>DEMON SLAYER</h2><p>Hinokami !</p>
   </div>
-  <div class="card jujutsu" onclick="playSound(this, 'Jujutsu Kaisen 👊')">
+  <div class="card jujutsu" onclick="playSound(this, 'Jujutsu Kaisen 👊', 'SATORU GOJO')">
     <span class="emoji">👊</span><h2>JUJUTSU KAISEN</h2><p>Gojo !</p>
   </div>
 </div>
 
+<div id="charName"></div>
 <div id="nowPlaying">👆 Clique sur une carte</div>
 
 <button id="loopBtn" class="btn" onclick="toggleLoop()">🔁 Boucle : OFF</button>
 <button id="boostBtn" class="btn on" onclick="toggleBoost()">🔊 Booster Volume : ON</button>
-<p class="info">Le booster met le son au max et rend les sons faibles plus forts.</p>
+<p class="info">La même image s'affiche pour toutes les cartes.</p>
 
 <audio id="player" src="A%2012.mp3" preload="auto"></audio>
 
 <script>
   const player = document.getElementById('player');
   const nowPlaying = document.getElementById('nowPlaying');
+  const charName = document.getElementById('charName');
   const loopBtn = document.getElementById('loopBtn');
   const boostBtn = document.getElementById('boostBtn');
 
@@ -84,7 +93,7 @@
       source.connect(gainNode);
       gainNode.connect(compressor);
       compressor.connect(audioCtx.destination);
-    } catch(e) { console.log("Boost non supporté"); }
+    } catch(e) {}
   }
 
   function toggleBoost() {
@@ -103,11 +112,17 @@
     loopBtn.classList.toggle('on', loopOn);
   }
 
-  function playSound(card, name) {
+  function playSound(card, name, char) {
     initAudioBoost();
     if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
     document.querySelectorAll('.card').forEach(c => c.classList.remove('playing'));
     card.classList.add('playing');
+
+    // --- LA MÊME IMAGE POUR TOUT LE MONDE - CORRIGÉ ---
+    document.body.style.backgroundImage = "url('fond.jpg.jpeg')";
+    document.body.classList.remove('no-bg');
+    charName.textContent = char;
+
     nowPlaying.textContent = '▶️ En train de jouer : ' + name;
     player.volume = 1.0;
     player.currentTime = 0;
