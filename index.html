@@ -7,12 +7,14 @@
 <style>
     * { margin:0; padding:0; box-sizing:border-box; font-family: -apple-system, sans-serif; }
   body { background: #0f0f1a; color: white; min-height: 100vh; padding: 20px; position: relative; }
-  #bgImage { position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; display: none; }
-  #bgOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.45); z-index: -1; display: none; }
-  h1 { text-align:center; font-size: 28px; margin: 15px 0 5px; text-shadow: 0 2px 10px black; position: relative; z-index: 1; }
+
+  /* --- CORRIGÉ : z-index 0 au lieu de -1, pour être DEVANT le fond --- */
+  #bgImage { position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; display: none; }
+
+  h1 { text-align:center; font-size: 28px; margin: 15px 0 5px; text-shadow: 0 2px 10px black; position: relative; z-index: 2; }
   h1 span { color: #ff3d71; }
-  p.subtitle { text-align:center; color: #ddd; margin-bottom: 25px; font-size: 15px; text-shadow: 0 1px 5px black; position: relative; z-index: 1; }
-  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; max-width: 500px; margin: 0 auto; position: relative; z-index: 1; }
+  p.subtitle { text-align:center; color: #ddd; margin-bottom: 25px; font-size: 15px; text-shadow: 0 1px 5px black; position: relative; z-index: 2; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; max-width: 500px; margin: 0 auto; position: relative; z-index: 2; }
   .card { border-radius: 20px; padding: 22px 10px; text-align:center; cursor:pointer; border: 2px solid rgba(255,255,255,0.3); transition: 0.2s; }
   .card:active { transform: scale(0.95); }
   .card .emoji { font-size: 48px; display:block; margin-bottom: 10px; }
@@ -23,20 +25,19 @@
   .demon { background: linear-gradient(135deg, rgba(0,180,216,0.9), rgba(0,119,182,0.9)); }
   .jujutsu { background: linear-gradient(135deg, rgba(114,9,183,0.9), rgba(58,12,163,0.9)); }
   .playing { border-color: white !important; box-shadow: 0 0 25px white; transform: scale(1.03); }
-  #nowPlaying { text-align:center; margin-top: 25px; font-size: 15px; font-weight:bold; color: #ffde59; min-height: 20px; text-shadow: 0 1px 5px black; position: relative; z-index: 1; }
-  #charName { text-align:center; font-size: 32px; font-weight:900; margin-top:10px; text-shadow: 0 3px 15px black; letter-spacing: 1px; min-height: 40px; position: relative; z-index: 1; }
-  .btn { display:block; margin:12px auto; padding:13px 22px; border-radius:50px; border:none; font-weight:bold; font-size:15px; cursor:pointer; width: 280px; position: relative; z-index: 1; }
+  #nowPlaying { text-align:center; margin-top: 25px; font-size: 15px; font-weight:bold; color: #ffde59; min-height: 20px; text-shadow: 0 1px 5px black; position: relative; z-index: 2; }
+  #charName { text-align:center; font-size: 32px; font-weight:900; margin-top:10px; text-shadow: 0 3px 15px black; letter-spacing: 1px; min-height: 40px; position: relative; z-index: 2; }
+  .btn { display:block; margin:12px auto; padding:13px 22px; border-radius:50px; border:none; font-weight:bold; font-size:15px; cursor:pointer; width: 280px; position: relative; z-index: 2; }
   #loopBtn { background:white; color:black; }
   #loopBtn.on { background:#ffde59; color:black; }
   #boostBtn { background:#ff3d71; color:white; }
   #boostBtn.on { background:#00e676; color:black; }
-  .info { text-align:center; color:#ccc; font-size:12px; margin-top:10px; text-shadow: 0 1px 3px black; position: relative; z-index: 1; }
+  .info { text-align:center; color:#ccc; font-size:12px; margin-top:10px; text-shadow: 0 1px 3px black; position: relative; z-index: 2; }
 </style>
 </head>
 <body>
 
 <img id="bgImage" src="" alt="">
-<div id="bgOverlay"></div>
 
 <h1>ANIME <span>SOUNDS</span> 🎧</h1>
 <p class="subtitle">Choisis ton anime, écoute le son</p>
@@ -72,13 +73,8 @@
   const loopBtn = document.getElementById('loopBtn');
   const boostBtn = document.getElementById('boostBtn');
   const bgImage = document.getElementById('bgImage');
-  const bgOverlay = document.getElementById('bgOverlay');
 
-  let audioCtx = null;
-  let gainNode = null;
-  let compressor = null;
-  let boostOn = true;
-
+  let audioCtx = null, gainNode = null, compressor = null, boostOn = true;
   function initAudioBoost() {
     if (audioCtx) return;
     try {
@@ -86,58 +82,38 @@
       const source = audioCtx.createMediaElementSource(player);
       gainNode = audioCtx.createGain();
       compressor = audioCtx.createDynamicsCompressor();
-      compressor.threshold.value = -24;
-      compressor.ratio.value = 12;
-      compressor.attack.value = 0.003;
-      compressor.release.value = 0.25;
+      compressor.threshold.value = -24; compressor.ratio.value = 12;
+      compressor.attack.value = 0.003; compressor.release.value = 0.25;
       gainNode.gain.value = 2.5;
-      source.connect(gainNode);
-      gainNode.connect(compressor);
-      compressor.connect(audioCtx.destination);
+      source.connect(gainNode); gainNode.connect(compressor); compressor.connect(audioCtx.destination);
     } catch(e) {}
   }
-
   function toggleBoost() {
     boostOn = !boostOn;
     if (gainNode) gainNode.gain.value = boostOn ? 2.5 : 1.0;
     boostBtn.textContent = boostOn ? '🔊 Booster Volume : ON' : '🔊 Booster Volume : OFF';
-    boostBtn.classList.toggle('on', boostOn);
-    player.volume = 1.0;
+    boostBtn.classList.toggle('on', boostOn); player.volume = 1.0;
   }
-
   let loopOn = false;
   function toggleLoop() {
-    loopOn = !loopOn;
-    player.loop = loopOn;
+    loopOn = !loopOn; player.loop = loopOn;
     loopBtn.textContent = loopOn ? '🔁 Boucle : ON - Clique pour arrêter' : '🔁 Boucle : OFF';
     loopBtn.classList.toggle('on', loopOn);
   }
 
-  bgImage.onload = () => {
-    bgImage.style.display = 'block';
-    bgOverlay.style.display = 'block';
-  };
-  bgImage.onerror = () => {
-    bgImage.style.display = 'none';
-    bgOverlay.style.display = 'none';
-  };
+  bgImage.onload = () => { bgImage.style.display = 'block'; };
+  bgImage.onerror = () => { bgImage.style.display = 'none'; };
 
   function playSound(card, name, char) {
     initAudioBoost();
     if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
     document.querySelectorAll('.card').forEach(c => c.classList.remove('playing'));
     card.classList.add('playing');
-
-    // --- LE VRAI NOM : fond.jpj.jpeg ---
     bgImage.src = 'fond.jpj.jpeg';
     charName.textContent = char;
-
     nowPlaying.textContent = '▶️ En train de jouer : ' + name;
-    player.volume = 1.0;
-    player.currentTime = 0;
-    player.play();
+    player.volume = 1.0; player.currentTime = 0; player.play();
   }
-
   player.onended = () => {
     if (!player.loop) {
       document.querySelectorAll('.card').forEach(c => c.classList.remove('playing'));
@@ -145,6 +121,5 @@
     }
   };
 </script>
-
 </body>
 </html>
