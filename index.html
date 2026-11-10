@@ -5,17 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Anime Sounds 🎧 - By SoniiiTheGhost 👻</title>
 
-<!-- ===== APERÇU WHATSAPP / LE GRAND DUEL ===== -->
+<!-- ===== APERÇU WHATSAPP : JUSTE LE NOM, SANS IMAGE ===== -->
 <meta property="og:title" content="Anime Sounds 🎧 - By SoniiiTheGhost 👻">
-<meta property="og:description" content="Choisis ton anime, écoute le son ! Naruto, One Piece, Demon Slayer, Jujutsu Kaisen">
-<meta property="og:image" content="https://soni-debug.github.io/BadTest/fond.jpj.jpeg">
 <meta property="og:url" content="https://soni-debug.github.io/BadTest/">
 <meta property="og:type" content="website">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Anime Sounds 🎧 - By SoniiiTheGhost 👻">
-<meta name="twitter:description" content="Choisis ton anime, écoute le son !">
-<meta name="twitter:image" content="https://soni-debug.github.io/BadTest/fond.jpj.jpeg">
-<!-- ============================================ -->
+<!-- PAS de og:image, PAS de og:description = pas de photo -->
+<!-- ======================================================= -->
 
 <style>
     * { margin:0; padding:0; box-sizing:border-box; font-family: -apple-system, sans-serif; }
@@ -49,86 +44,3 @@
 <body>
 
 <img id="bgImage" src="" alt="">
-
-<h1>ANIME <span>SOUNDS</span> 🎧</h1>
-<p class="by">(By SoniiiTheGhost 👻)</p>
-<p class="subtitle">Choisis ton anime, écoute le son</p>
-
-<div class="grid">
-  <div class="card naruto" onclick="playSound(this, 'Naruto 🍥', 'NARUTO UZUMAKI')">
-    <span class="emoji">🍥</span><h2>NARUTO</h2><p>Dattebayo !</p>
-  </div>
-  <div class="card onepiece" onclick="playSound(this, 'One Piece 🏴‍☠️', 'MONKEY D. LUFFY')">
-    <span class="emoji">🏴‍☠️</span><h2>ONE PIECE</h2><p>Gear 5 !</p>
-  </div>
-  <div class="card demon" onclick="playSound(this, 'Demon Slayer ⚔️', 'TANJIRO KAMADO')">
-    <span class="emoji">⚔️</span><h2>DEMON SLAYER</h2><p>Hinokami !</p>
-  </div>
-  <div class="card jujutsu" onclick="playSound(this, 'Jujutsu Kaisen 👊', 'SATORU GOJO')">
-    <span class="emoji">👊</span><h2>JUJUTSU KAISEN</h2><p>Gojo !</p>
-  </div>
-</div>
-
-<div id="charName"></div>
-<div id="nowPlaying">👆 Clique sur une carte</div>
-
-<button id="loopBtn" class="btn" onclick="toggleLoop()">🔁 Boucle : OFF</button>
-<button id="boostBtn" class="btn on" onclick="toggleBoost()">🔊 Booster Volume : ON</button>
-<p class="info">La même image s'affiche pour toutes les cartes.</p>
-
-<audio id="player" src="A%2012.mp3" preload="auto"></audio>
-
-<script>
-  const player = document.getElementById('player');
-  const nowPlaying = document.getElementById('nowPlaying');
-  const charName = document.getElementById('charName');
-  const loopBtn = document.getElementById('loopBtn');
-  const boostBtn = document.getElementById('boostBtn');
-  const bgImage = document.getElementById('bgImage');
-  let audioCtx = null, gainNode = null, compressor = null, boostOn = true;
-  function initAudioBoost() {
-    if (audioCtx) return;
-    try {
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      const source = audioCtx.createMediaElementSource(player);
-      gainNode = audioCtx.createGain();
-      compressor = audioCtx.createDynamicsCompressor();
-      compressor.threshold.value = -24; compressor.ratio.value = 12;
-      compressor.attack.value = 0.003; compressor.release.value = 0.25;
-      gainNode.gain.value = 2.5;
-      source.connect(gainNode); gainNode.connect(compressor); compressor.connect(audioCtx.destination);
-    } catch(e) {}
-  }
-  function toggleBoost() {
-    boostOn = !boostOn;
-    if (gainNode) gainNode.gain.value = boostOn ? 2.5 : 1.0;
-    boostBtn.textContent = boostOn ? '🔊 Booster Volume : ON' : '🔊 Booster Volume : OFF';
-    boostBtn.classList.toggle('on', boostOn); player.volume = 1.0;
-  }
-  let loopOn = false;
-  function toggleLoop() {
-    loopOn = !loopOn; player.loop = loopOn;
-    loopBtn.textContent = loopOn ? '🔁 Boucle : ON - Clique pour arrêter' : '🔁 Boucle : OFF';
-    loopBtn.classList.toggle('on', loopOn);
-  }
-  bgImage.onload = () => { bgImage.style.display = 'block'; };
-  bgImage.onerror = () => { bgImage.style.display = 'none'; };
-  function playSound(card, name, char) {
-    initAudioBoost();
-    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-    document.querySelectorAll('.card').forEach(c => c.classList.remove('playing'));
-    card.classList.add('playing');
-    bgImage.src = 'fond.jpj.jpeg';
-    charName.textContent = char;
-    nowPlaying.textContent = '▶️ En train de jouer : ' + name;
-    player.volume = 1.0; player.currentTime = 0; player.play();
-  }
-  player.onended = () => {
-    if (!player.loop) {
-      document.querySelectorAll('.card').forEach(c => c.classList.remove('playing'));
-      nowPlaying.textContent = '👆 Clique sur une carte';
-    }
-  };
-</script>
-</body>
-</html>
