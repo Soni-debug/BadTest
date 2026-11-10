@@ -54,9 +54,9 @@
 
 <button id="loopBtn" class="btn" onclick="toggleLoop()">🔁 Boucle : OFF</button>
 <button id="boostBtn" class="btn on" onclick="toggleBoost()">🔊 Booster Volume : ON</button>
-<p class="info">Le booster met le son au max et rend les sons faibles plus forts.<br>Pour le maximum, mets aussi le volume de ton téléphone au max.</p>
+<p class="info">Le booster met le son au max et rend les sons faibles plus forts.</p>
 
-<audio id="player" src="A12%202.m4a" preload="auto"></audio>
+<audio id="player" src="A%2012.mp3" preload="auto"></audio>
 
 <script>
   const player = document.getElementById('player');
@@ -64,7 +64,6 @@
   const loopBtn = document.getElementById('loopBtn');
   const boostBtn = document.getElementById('boostBtn');
 
-  // --- VOLUME MAX + BOOSTER ---
   let audioCtx = null;
   let gainNode = null;
   let compressor = null;
@@ -77,16 +76,15 @@
       const source = audioCtx.createMediaElementSource(player);
       gainNode = audioCtx.createGain();
       compressor = audioCtx.createDynamicsCompressor();
-      // Réglages pour remonter les sons faibles
       compressor.threshold.value = -24;
       compressor.ratio.value = 12;
       compressor.attack.value = 0.003;
       compressor.release.value = 0.25;
-      gainNode.gain.value = 2.5; // Booster x2.5
+      gainNode.gain.value = 2.5;
       source.connect(gainNode);
       gainNode.connect(compressor);
       compressor.connect(audioCtx.destination);
-    } catch(e) { console.log("Boost non supporté, volume normal"); }
+    } catch(e) { console.log("Boost non supporté"); }
   }
 
   function toggleBoost() {
@@ -97,7 +95,6 @@
     player.volume = 1.0;
   }
 
-  // --- BOUCLE ---
   let loopOn = false;
   function toggleLoop() {
     loopOn = !loopOn;
@@ -106,14 +103,13 @@
     loopBtn.classList.toggle('on', loopOn);
   }
 
-  // --- LECTURE ---
   function playSound(card, name) {
     initAudioBoost();
     if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
     document.querySelectorAll('.card').forEach(c => c.classList.remove('playing'));
     card.classList.add('playing');
     nowPlaying.textContent = '▶️ En train de jouer : ' + name;
-    player.volume = 1.0; // Toujours au max dans le site
+    player.volume = 1.0;
     player.currentTime = 0;
     player.play();
   }
